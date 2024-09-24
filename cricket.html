@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Scorer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .scorer {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .score-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .score-item {
+            text-align: center;
+        }
+        .score-item h2 {
+            margin: 0;
+            font-size: 16px;
+            color: #666;
+        }
+        .score-item p {
+            margin: 5px 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .run-btn { background-color: #4CAF50; color: white; }
+        .wicket-btn { background-color: #f44336; color: white; }
+        .ball-btn { background-color: #2196F3; color: white; }
+        .undo-btn { background-color: #FFC107; color: black; }
+        .reset-btn { background-color: #9E9E9E; color: white; }
+    </style>
+</head>
+<body>
+    <div class="scorer">
+        <h1>Cricket Scorer</h1>
+        <div class="score-display">
+            <div class="score-item">
+                <h2>Runs</h2>
+                <p id="runs">0</p>
+            </div>
+            <div class="score-item">
+                <h2>Wickets</h2>
+                <p id="wickets">0</p>
+            </div>
+            <div class="score-item">
+                <h2>Balls</h2>
+                <p id="balls">0</p>
+            </div>
+            <div class="score-item">
+                <h2>Overs</h2>
+                <p id="overs">0.0</p>
+            </div>
+        </div>
+        <div class="buttons">
+            <button class="run-btn" onclick="addRuns(1)">+1 Run</button>
+            <button class="run-btn" onclick="addRuns(4)">+4 Runs</button>
+            <button class="run-btn" onclick="addRuns(6)">+6 Runs</button>
+            <button class="wicket-btn" onclick="addWicket()">Wicket</button>
+            <button class="ball-btn" onclick="addBall()">Ball</button>
+            <button class="undo-btn" onclick="undo()">Undo</button>
+            <button class="reset-btn" onclick="resetAll()">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        let runs = 0;
+        let wickets = 0;
+        let balls = 0;
+        let overs = 0;
+        let history = [];
+
+        function updateDisplay() {
+            document.getElementById('runs').textContent = runs;
+            document.getElementById('wickets').textContent = wickets;
+            document.getElementById('balls').textContent = balls;
+            document.getElementById('overs').textContent = `${overs}.${balls}`;
+        }
+
+        function addRuns(amount) {
+            runs += amount;
+            history.push({ type: 'runs', value: amount });
+            updateDisplay();
+        }
+
+        function addWicket() {
+            if (wickets < 10) {
+                wickets++;
+                history.push({ type: 'wicket', value: 1 });
+                updateDisplay();
+            }
+        }
+
+        function addBall() {
+            balls++;
+            if (balls === 6) {
+                balls = 0;
+                overs++;
+            }
+            history.push({ type: 'ball', value: 1 });
+            updateDisplay();
+        }
+
+        function undo() {
+            if (history.length === 0) return;
+
+            const lastAction = history.pop();
+            switch (lastAction.type) {
+                case 'runs':
+                    runs -= lastAction.value;
+                    break;
+                case 'wicket':
+                    wickets--;
+                    break;
+                case 'ball':
+                    if (balls === 0) {
+                        balls = 5;
+                        overs--;
+                    } else {
+                        balls--;
+                    }
+                    break;
+            }
+            updateDisplay();
+        }
+
+        function resetAll() {
+            runs = 0;
+            wickets = 0;
+            balls = 0;
+            overs = 0;
+            history = [];
+            updateDisplay();
+        }
+
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>
